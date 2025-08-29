@@ -1,0 +1,37 @@
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+
+# virtual env
+env/
+.venv/
+
+# logs and cache
+logs/
+*.log
+*.csv
+*.db
+*.sqlite
+
+# docker
+*.tar
+*.zip
+*.session
+
+# IDE
+.vscode/
+.vs/
+.idea/
+
+# airflow
+airflow.db
+airflow.cfg
+webserver_config.py
+scheduler/
+dags/__pycache__/
+
+# local
+*.bak

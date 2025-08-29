@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: social_sentiment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+
+  sentiment:
+    build: .
+    restart: always
+    environment:
+      PYTHONPATH: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  airflow:
+    image: apache/airflow:2.8.1-python3.10
+    restart: always
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - .:/opt/airflow
+    ports:
+      - "8080:8080"
+    command: webserver
+    depends_on:
+      - db
+
+  airflow-init:
+    image: apache/airflow:2.8.1-python3.10
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - .:/opt/airflow
+    command: db init
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
